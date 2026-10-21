@@ -1,7 +1,7 @@
 # Encounter lab
 
 Predicts how likely a D&D 5e party is to win an encounter, and compares that with the official XP-budget guideline.
-Runs entirely in the browser, with no server and no dependencies. [Dragonwatch](https://github.com/XanderThijsPXL) uses the same engine.
+Runs entirely in the browser, with no server and no dependencies. [Dragonwatch](https://github.com/XanderThijs/dragonwatch) uses the same engine.
 
 ## What it does
 Pick a party (13 classes, with spell slots and class features) and some SRD monsters. Gradient-boosted trees trained on simulated encounters predict the win chance, the share of party HP lost and how many heroes fall, and compare that with the official XP-budget guideline. It runs in the browser (`web/`, no server needed), next to a live simulation of the same fight that checks it. Dragonwatch, my D&D combat tracker, uses the same engine for its live win chance.
