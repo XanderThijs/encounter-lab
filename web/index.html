@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Encounter lab</title>
+<meta name="description" content="Predicts how a D&D party will do against a set of monsters, with a model trained on tens of thousands of simulated encounters.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#060A12">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="bar"><div class="bar-in">
+  <a class="brand" href="./">Encounter lab</a>
+  <nav><a href="#how">How it works</a></nav>
+</div></header>
+
+<main class="wrap">
+  <section class="intro">
+    <h1>Will the party survive?</h1>
+    <p class="lead">Build a party and pick some monsters. A model trained on <span data-k="enc">35,000</span> simulated D&amp;D encounters predicts the outcome instantly, and a live simulation of the same fight checks it.</p>
+    <div class="presets" id="presets" aria-label="Example encounters"></div>
+  </section>
+
+  <div class="grid">
+    <div class="col">
+      <section class="card" aria-labelledby="partyH">
+        <div class="card-head"><h2 id="partyH">Party</h2>
+          <div class="ctrl"><label for="level">Level</label><select id="level"></select>
+            <div class="stepper" role="group" aria-label="Number of heroes"><button type="button" id="heroDec" aria-label="Fewer heroes">−</button><span id="heroCount">4</span><button type="button" id="heroInc" aria-label="More heroes">+</button></div>
+          </div>
+        </div>
+        <div id="heroes" class="heroes"></div>
+        <p class="note">Pick a class for each hero. HP, AC, attacks, spell slots and class features come from the class table and the level; change any number to match your own characters, or start a hero hurt, low on slots or downed. The model was trained on <span class="range-text">parties of 3 to 6 heroes at levels 1 to 10</span>.</p>
+      </section>
+
+      <section class="card" aria-labelledby="genH" id="genCard">
+        <div class="card-head"><h2 id="genH">Generate an encounter</h2></div>
+        <p class="note first">Choose the monsters you are willing to use and how hard the fight should be. The model looks through thousands of combinations and the simulation checks the best ones.</p>
+        <div class="gen-row"><span class="gen-label">Win chance for the party</span>
+          <div class="gen-chips" id="genPresets" role="group" aria-label="Difficulty"></div></div>
+        <div class="gen-row"><input type="range" id="genTarget" min="5" max="99" step="1" value="70" aria-label="Target win chance"><output id="genTargetOut">70%</output></div>
+        <div class="gen-row"><label for="genMax" class="gen-label">Most monsters in the fight</label><select id="genMax"></select></div>
+        <div class="gen-label">Monster pool <span class="sub" id="genPoolInfo"></span></div>
+        <div class="search">
+          <input id="gq" type="search" placeholder="Filter the pool (name)" autocomplete="off" aria-label="Filter the monster pool">
+          <select id="gtype" aria-label="Monster type"></select>
+        </div>
+        <div class="gen-row"><button type="button" class="add" id="gAll">Select all shown</button><button type="button" class="add" id="gNone">Clear</button></div>
+        <ul id="gpool" class="mlist"></ul>
+        <div class="gen-row"><button type="button" class="primary" id="genGo">Generate</button><span class="sub" id="genStatus"></span></div>
+        <div id="genOut" class="gen-out" aria-live="polite"></div>
+      </section>
+
+      <section class="card" aria-labelledby="monH">
+        <div class="card-head"><h2 id="monH">Monsters</h2><span class="count" id="monCount">0 of 14</span></div>
+        <div id="picked" class="picked"></div>
+        <div class="search">
+          <input id="q" type="search" placeholder="Search the SRD bestiary (goblin, troll, dragon…)" autocomplete="off" aria-label="Search monsters">
+          <label class="check"><input type="checkbox" id="plausible" checked> Only CR up to level + 3</label>
+        </div>
+        <ul id="list" class="mlist"></ul>
+      </section>
+    </div>
+
+    <aside class="col">
+      <section class="card result" id="result" aria-live="polite">
+        <div class="loading" id="loading">Loading the model…</div>
+      </section>
+    </aside>
+  </div>
+
+  <section class="card how" id="how">
+    <h2>How it works</h2>
+    <div class="how-grid">
+      <div>
+        <p>I wrote a simplified D&amp;D 5e fight simulator and played over <span data-k="fights">3 million</span> fights across <span data-k="enc">35,000</span> random encounters (<span class="range-text">parties of 3 to 6 heroes at levels 1 to 10</span>, monsters from the open SRD). Heroes are built from the 13 classes: hit points, armour, attacks and damage grow with the level, and casters spend spell slots (area spells from level 3, Healing Word and Cure Wounds, smites) while fighters use Action Surge and Second Wind, paladins Lay on Hands and barbarians Rage. Monsters use breath weapons and legendary actions. Heroes can fall and be healed back up, and about a third of the parties start the fight hurt or low on slots. A third of the encounters were picked on purpose from fights that could go either way, and each of those was played many times, because close fights are the hard cases. Each encounter was turned into 51 numbers, such as total hit points, damage per round, spell slots left, breath and legendary damage, the weakest hero and the outcome of a quick dice-free average fight. Three boosted-tree models learned to predict the win chance, the share of party hit points lost, and how many heroes fall.</p>
+        <p>The model is a few thousand small decision trees and runs here in your browser. The "Simulation" column is the same simulator running live, so you can see how close the model is.</p>
+      </div>
+      <div>
+        <table class="metrics" id="metrics"><caption>Average error on encounters the models never saw</caption></table>
+        <p class="note"><strong>Limits.</strong> The reference answers come from my own simplified simulator, not from real tables: no magic items, regeneration, control or buff spells, positioning, terrain, resistances or death saves, and every hero plays a simple fixed tactic. Treat the numbers as a sanity check for planning, not a promise.</p>
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="foot"><div class="wrap"><span>Monster data: 5e SRD 5.1 (CC-BY-4.0), via 5e-bits/5e-database.</span></div></footer>
+
+<script src="engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

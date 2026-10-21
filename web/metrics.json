@@ -1,0 +1,29 @@
+{
+ "p_win": {
+  "mae": 0.034447925802663225,
+  "r2": 0.9670878271034571,
+  "trees": 600,
+  "close_fights_mae": 0.10617343437446687,
+  "close_fights_mae_without_extra_data": 0.11210334227450137
+ },
+ "hp_lost": {
+  "mae": 0.028117335799330213,
+  "r2": 0.9824326933879203,
+  "trees": 600,
+  "close_fights_mae": 0.05346929160021658,
+  "close_fights_mae_without_extra_data": 0.05916204135389339
+ },
+ "deaths": {
+  "mae": 0.2116826431262994,
+  "r2": 0.966289349349008,
+  "trees": 600,
+  "close_fights_mae": 0.5279294626634564,
+  "close_fights_mae_without_extra_data": 0.5612328081128264
+ },
+ "guideline_mae": 0.2097130408609476,
+ "guideline_close_fights_mae": 0.2831833395909302,
+ "trained_on": {
+  "encounters": 131167,
+  "fights": 12633040
+ }
+}

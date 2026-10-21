@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+
+# generated, rebuild with: python src/run_all.py
+data/*.npz
+data/v2/
+
+# older models and deploy copies
+web/model_v*.json
+deploy/
