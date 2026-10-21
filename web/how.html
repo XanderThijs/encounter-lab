@@ -1,0 +1,77 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>How the Encounter lab works</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.pg{max-width:880px;margin:0 auto;padding:clamp(36px,7vw,72px) clamp(16px,4vw,48px) 80px}
+.pg h1{margin-bottom:18px}.pg .lead{max-width:60ch}
+.pg h2{font-size:clamp(24px,3vw,32px);letter-spacing:-.035em;margin:68px 0 18px}
+.pg p{color:#B7C1D6;font-size:17.5px;line-height:1.65;max-width:64ch;margin:0 0 16px}
+.pg p b{color:var(--ink);font-weight:500}
+.steps{list-style:none;margin:28px 0 0;padding:0;display:grid;gap:14px;counter-reset:s}
+.steps li{counter-increment:s;display:grid;grid-template-columns:44px 1fr;gap:16px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 22px}
+.steps li::before{content:counter(s);width:34px;height:34px;border-radius:50%;background:var(--surface2);border:1px solid var(--line2);display:grid;place-items:center;font-weight:600;color:var(--accent)}
+.steps h3{margin:2px 0 6px;font-size:19px;letter-spacing:-.02em}.steps p{margin:0;font-size:16px}
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:26px 0 8px}
+.stat div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.stat b{display:block;font:600 34px/1.1 var(--sans);letter-spacing:-.04em}.stat span{color:var(--muted);font-size:14px}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px;margin-top:22px}
+.chart h3{margin:0 0 4px;font-size:17px}.chart .sub{color:var(--muted);font-size:14px;margin:0 0 22px}
+.br{display:grid;grid-template-columns:150px 1fr 64px;gap:14px;align-items:center;margin:10px 0;font-size:14.5px}
+.br i{display:block;height:20px;border-radius:4px}.br span{color:var(--muted)}.br b{text-align:right;font-weight:500}
+.grp{margin:22px 0 6px;font-size:13.5px;color:var(--muted)}
+.lim{margin:18px 0 0;padding:0;list-style:none;display:grid;gap:10px}
+.lim li{padding:12px 16px;border:1px solid var(--line);border-radius:10px;color:#B7C1D6;font-size:16px}
+.lim b{color:var(--ink);font-weight:500}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:34px}
+.cta a{padding:11px 20px;border-radius:9px;text-decoration:none;font-weight:500}
+.cta .p{background:var(--accent);color:var(--on-accent)}.cta .g{border:1px solid var(--line2)}
+@media(max-width:700px){.stat{grid-template-columns:1fr}.br{grid-template-columns:110px 1fr 56px}}
+</style></head><body>
+<header class="bar"><div class="bar-in"><a class="brand" href="./">Encounter lab</a><nav><a href="./">Back to the lab</a></nav></div></header>
+<main class="pg">
+<h1>How the Encounter lab works</h1>
+<p class="lead">The lab predicts whether a D&amp;D party wins a fight without playing it. Here is where the answer comes from, how accurate it is, and where it breaks.</p>
+
+<div class="stat"><div><b id="sEnc">131,167</b><span>random encounters simulated</span></div><div><b id="sFights">12.6 million</b><span>individual fights played</span></div><div><b id="sErr">3.4 pts</b><span>average error on win chance</span></div></div>
+
+<h2>From dice to a prediction</h2>
+<ol class="steps">
+<li><div><h3>Simulate</h3><p>I wrote a D&amp;D 5e fight simulator: 13 classes, spell slots, Action Surge, Lay on Hands, breath weapons, legendary actions and regeneration. A random party meets random SRD monsters and the fight is played about 100 times to get a reference win chance.</p></div></li>
+<li><div><h3>Describe</h3><p>Every fight becomes 52 numbers: party hit points, damage per round, how long each side survives, healing available, monster regeneration, and a quick dice-free version of the fight.</p></div></li>
+<li><div><h3>Train</h3><p>Three gradient-boosted tree models (600 trees each) learn win chance, share of party HP lost and heroes down from those numbers. Training runs on a normal PC in about 15 minutes.</p></div></li>
+<li><div><h3>Run in your browser</h3><p>The trees are exported as JSON and evaluated by a small JavaScript function. No server is involved. A test checks that the JavaScript and Python give identical predictions.</p></div></li>
+</ol>
+
+<h2>How accurate is it</h2>
+<p>Measured on encounters the model never saw during training. The official XP-budget guideline is not a probability, so it is compared after fitting its best curve.</p>
+<div class="chart"><h3>Average error in win chance</h3><p class="sub">Percentage points, lower is better</p>
+<div class="grp">All fights</div>
+<div class="br"><span>XP guideline</span><i id="gA" style="width:100%;background:var(--bad)"></i><b id="gAv">21.0</b></div>
+<div class="br"><span>This model</span><i id="mA" style="width:16.2%;background:var(--good)"></i><b id="mAv">3.4</b></div>
+<div class="grp">Close fights (win chance near 50%)</div>
+<div class="br"><span>XP guideline</span><i id="gC" style="width:100%;background:var(--bad)"></i><b id="gCv">28.3</b></div>
+<div class="br"><span>This model</span><i id="mC" style="width:37.5%;background:var(--good)"></i><b id="mCv">10.6</b></div></div>
+<p style="margin-top:18px">Close fights are the weak spot. When the outcome is nearly a coin flip, the dice decide it, so even the simulator disagrees with itself by a few points from run to run.</p>
+
+<h2>What it does not know</h2>
+<ul class="lim">
+<li><b>The reference is my simulator,</b> not real tables. The model learns that simulator, flaws included.</li>
+<li><b>Missing rules:</b> magic items, control and buff spells, positioning, terrain, resistances and death saves.</li>
+<li><b>Simple tactics:</b> every hero and monster follows a fixed, sensible plan, not a clever one.</li>
+<li><b>Regeneration is assumed unstoppable.</b> Fire or acid would switch it off for trolls.</li>
+</ul>
+<p style="margin-top:18px">Treat the number as a planning aid, not a promise.</p>
+<div class="cta"><a class="p" href="./">Try the lab</a><a class="g" href="https://github.com/XanderThijsPXL/encounter-lab">Read the code on GitHub</a></div>
+</main>
+<footer class="foot"><div class="wrap"><span>Monster data: 5e SRD 5.1 (CC-BY-4.0), via 5e-bits/5e-database.</span></div></footer>
+<script>
+// Numbers come from metrics.json, so this page stays correct after a retrain.
+fetch('metrics.json').then(r => r.json()).then(m => {
+  const $ = id => document.getElementById(id), f1 = v => (v * 100).toFixed(1);
+  const G = m.guideline_mae, GC = m.guideline_close_fights_mae, M = m.p_win.mae, MC = m.p_win.close_fights_mae, mx = Math.max(G, GC);
+  $('sEnc').textContent = m.trained_on.encounters.toLocaleString('en-US');
+  $('sFights').textContent = (m.trained_on.fights / 1e6).toFixed(1) + ' million';
+  $('sErr').textContent = f1(M) + ' pts';
+  [['gA', G], ['mA', M], ['gC', GC], ['mC', MC]].forEach(([id, v]) => { $(id).style.width = (v / mx * 100).toFixed(1) + '%'; $(id + 'v').textContent = f1(v); });
+}).catch(() => {});
+</script>
+</body></html>
