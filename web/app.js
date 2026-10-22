@@ -220,7 +220,7 @@
       <div class="cap">Chance the party wins</div>
       <div class="big"><span class="pct" id="pct">–</span><span class="verdict" id="verdict"></span></div>
       <div class="meter" role="img" aria-label="Win chance"><i id="meter"></i></div>
-      <table class="cmp"><thead><tr><th></th><th>Model</th><th id="simHead">Simulation</th></tr></thead><tbody>
+      <table class="cmp"><thead><tr><th class="sr">Measure</th><th>Model</th><th id="simHead">Simulation</th></tr></thead><tbody>
         <tr><td>Win chance</td><td id="m1">–</td><td class="sim" id="s1">…</td></tr>
         <tr><td>Party HP lost</td><td id="m2">–</td><td class="sim" id="s2">…</td></tr>
         <tr><td>Heroes down</td><td id="m3">–</td><td class="sim" id="s3">…</td></tr></tbody></table>
@@ -282,7 +282,7 @@
   /* ---------------- start up */
   function renderMetrics() {
     const t = $('metrics'), pts = v => (v * 100).toFixed(1) + ' pts', G = METRICS.guideline_mae, GC = METRICS.guideline_close_fights_mae;
-    const head = el('tr'); head.append(el('th', ''), el('th', '', 'All fights'), el('th', '', 'Close fights'));
+    const head = el('tr'); head.append(Object.assign(el('th', 'sr'), { textContent: 'Measure' }), el('th', '', 'All fights'), el('th', '', 'Close fights'));
     t.appendChild(head);
     const rows = [['Win chance, official guideline', pts(G), pts(GC)], ['Win chance, this model', pts(METRICS.p_win.mae), pts(METRICS.p_win.close_fights_mae), 1],
       ['Party HP lost, this model', pts(METRICS.hp_lost.mae), pts(METRICS.hp_lost.close_fights_mae), 1],
